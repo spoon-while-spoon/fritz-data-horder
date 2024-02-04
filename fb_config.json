@@ -1,0 +1,1 @@
+{  "routerurl": "http://192.168.2.1",  "username": "Benutzername",  "password": "Passwort",  "device_ain": "Geräte-AIN",  "command_cmd": "getswitchstate",  "ahaurl": "http://192.168.2.1/webservices/homeautoswitch.lua",  "interval": 60}

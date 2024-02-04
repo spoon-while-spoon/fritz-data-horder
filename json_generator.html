@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>FritzBox Configuration Generator</title>
+    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Cormorant Unicase' rel='stylesheet'>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        
+        .small-caps {
+            font-variant-caps: small-caps;
+            font-style: normal;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+
+        label {
+            margin-top: 10px;
+            display: block;
+        }
+
+        input,
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-bottom: 16px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .example {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #555;
+        }
+        
+       
+        }
+
+       
+        }        
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>FritzBox Configuration Generator</h2>
+        <form id="configForm">
+            
+            <label for="routerurl">Router URL:</label>
+                <input type="text" id="routerurl" name="routerurl" placeholder="http://192.168.178.1" title="The URL of your Fritzbox. Often starts with http://192.168." required>
+            
+            <label for="username">Username:</label>
+                <input type="text" id="username" name="username" placeholder="FritzboxUsername" title="The user created in the Fritzbox. Must have the required Smart Home rights.  " required>
+            
+            <label for="password">Password:</label>
+                <input type="password" id="password" name="password" placeholder="YourPassword" title="Set when creating the user" required>
+            
+            <label for="device_ain">Device AIN:</label>
+                <input type="text" id="device_ain" name="device_ain" placeholder="1234567890" title="Can be found in the Fritzbox, your Homebridge or with the getdevicelistinfo command" required>
+            
+            <label for="command_cmd">Command:</label>
+                <input type="text" id="command_cmd" name="command_cmd" placeholder="getswitchstate" title="See examples below" required>
+            
+            <label for="interval">Query Interval (seconds):</label>
+                <input type="number" id="interval" name="interval" placeholder="600" title="The interval in seconds in which the script queries the desired values and writes them to the database.  " required>
+            
+            <button type="button" onclick="generateConfig()">Generate Configuration</button>
+        </form>
+        <div class="example">
+            <h4>Command Examples:</h4>
+            <ul>
+                <li><strong>getdevicelistinfos</strong> - Provides the basic information of ALL SmartHome devices </li>
+                <li><strong>getdeviceinfos</strong> - Provides the basic information of the SmartHome device  </li>
+                <li><strong>getbasicdevicestats </strong> - Provides the basic statistics (temp, volt, power, energy)</li> 
+                <li><strong>gettriggerlistinfos </strong> - Provides the basic information of all routines/triggers </li>
+                <br>
+                <li><strong>setswitchon</strong> - Turns a smart home switch on.</li>
+                <li><strong>setswitchoff</strong> - Turns a smart home switch off.</li>
+                
+                <li><strong>getswitchstate</strong> - Retrieves the state of a smart home switch.</li>
+                <li><strong>getswitchpower</strong> - Determines the power currently being drawn from the socket </li>
+                <li><strong>getswitchenergy</strong> - Supplies the amount of energy drawn from the socket</li>
+                <li><strong>getswitchname</strong> - Returns the identifier of the actuator </li>
+                <li><strong>getswitchpresent </strong> - Determines the connection status of the actuator </li>
+                <br>
+                <li><strong>gettemperature</strong> - Retrieves the temperature from a smart home thermostat.</li>
+                <li><strong>gethkrtsoll</strong> - Setpoint temperature currently set for HKR </li>
+                <li><strong>gethkrkomfort</strong> - Comfort temperature set for HKR timer </li> 
+                <li><strong>gethkrabsenk</strong> - Economy temperature set for HKR timer </li>
+                
+                <br>
+            </ul>
+            
+         
+            <p>For the full list please see the the official <a href="https://avm.de/service/schnittstellen/">Documentation </a> on the AVM website or inside the original <a href="https://github.com/spoon-while-spoon/Fritz-sensordata-horder">Repository </a> on GitHub. </p>
+            <br>
+            <br>
+            <br>
+            <hr> <footer><b>If you have any questions, trouble or want to contribute, feel free to contact me:</b> <br>
+            <br>
+            <i class="small-caps"> <SPAN STYLE="font-size:140%"> Martin Fischbach</SPAN></i> <br>
+            <i class="icon-envelope"></i>  <a href="fb@fischbach-martin.de">fb@fischbach-martin.de</a><br />
+            <i class="icon-github-alt"></i>   <a href="https://github.com/spoon-while-spoon/"> spoon-while-spoon </a> 
+        </footer>
+            
+
+
+                
+        
+        </div>
+    </div>
+    <script>
+        function generateConfig() {
+            var form = document.getElementById('configForm');
+            var config = {
+                routerurl: form.routerurl.value,
+                username: form.username.value,
+                password: form.password.value,
+                device_ain: form.device_ain.value,
+                command_cmd: form.command_cmd.value,
+                interval: form.interval.value
+            };
+            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(config, null, 2));
+            var downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "fb_config.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            document.body.removeChild(downloadAnchor);
+        }
+
+    </script>
+</body>
+
+</html>
