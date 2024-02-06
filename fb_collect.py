@@ -5,11 +5,13 @@ import hashlib
 import json
 import sqlite3
 from time import sleep
-
+    
+#   Loads the Configuration Data
 def load_config():
     with open('fb_config.json', 'r') as file:
         return json.load(file)
 
+#   Getting the SID
 def fb_get_sid(fritzbox, fritz_user, fritz_pw):
     session = req.Session()
     http = urllib3.PoolManager()
@@ -32,6 +34,7 @@ def fb_get_sid(fritzbox, fritz_user, fritz_pw):
             exit()
     return fb_sid
 
+#   Creating the Sqlite Database if not already done
 def init_db():
     conn = sqlite3.connect('data.db')
     c = conn.cursor()
@@ -47,6 +50,9 @@ def save_to_db(raw_value):
     conn.commit()
     conn.close()
 
+#   Call for the sensor data. 
+#   More calls can be added but this requires to add more variables to 
+#   the config.json file
 def main():
     config = load_config()
     init_db()  
@@ -54,9 +60,6 @@ def main():
     while True:
         fb_sid = fb_get_sid(config['routerurl'], 
                             config['username'], config['password'])
-       # print("________________________________\n", 
-       #       "\n Created SID:", fb_sid, 
-       #       "\n________________________________\n")
         params = {
             "ain": config['device_ain'],
             "switchcmd": config['command_cmd'],
@@ -67,12 +70,11 @@ def main():
 
         if resp.status_code == 200:
             raw_value = resp.text
-         #  print(f"Response value: {raw_value}")
             save_to_db(raw_value) 
         else:
             print("Value Error")
-
+            
+#   Sets the Intervall between calls in seconds   
         sleep(config.get('interval', 60))
-
 if __name__ == '__main__':
     main()
